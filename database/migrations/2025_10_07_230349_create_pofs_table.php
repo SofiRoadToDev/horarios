@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('horarios', function (Blueprint $table) {
+        Schema::create('pofs', function (Blueprint $table) {
             $table->id();
+            $table->enum('tipo', ['Alta', 'Baja']);
             $table->foreignId('docente_id')->constrained('docentes')->onDelete('cascade');
-            $table->foreignId('curso_id')->constrained('cursos')->onDelete('cascade');
             $table->foreignId('materia_id')->constrained('materias')->onDelete('cascade');
-            $table->foreignId('dia_id')->constrained('dias')->onDelete('cascade');
-            $table->foreignId('bloque_hora_id')->constrained('bloque_horas')->onDelete('cascade');
-            $table->year('ciclo_lectivo');
-            $table->foreignId('pof_id')->constrained('pof')->onDelete('cascade');
+            $table->foreignId('curso_id')->constrained('cursos')->onDelete('cascade');
             $table->enum('condicion_docente', ['Titular', 'Interino', 'Suplente']);
+            $table->date('ciclo_lectivo');
+            $table->date('fecha');
+            $table->integer('obligaciones');// es la cantidad de horas catedra del docente en una materia y curso especifico, equivale a 40 minutos. Los horarios bloques representan una obligacion cada uno
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('horarios');
+        Schema::dropIfExists('pofs');
     }
 };

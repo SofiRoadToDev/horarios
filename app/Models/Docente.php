@@ -25,4 +25,9 @@ class Docente extends Model
     {
         return $this->hasMany(Horario::class);
     }
+
+    public function pofs(): HasMany
+    {
+        return $this->hasMany(Pof::class);
+    }
 }

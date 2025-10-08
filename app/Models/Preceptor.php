@@ -20,4 +20,6 @@ class Preceptor extends Model
         'dni',
         'password',
     ];
+
+    protected $table = 'preceptores';
 }
