@@ -18,6 +18,7 @@ class BloqueHoraSeeder extends Seeder
     public function run(): void
     {
         $bloquesHoras = [
+            // Turno Mañana
             [
                 'bloque' => '7:45 a 8:25',
                 'turno' => 'Mañana',
@@ -49,6 +50,39 @@ class BloqueHoraSeeder extends Seeder
             [
                 'bloque' => '12:25 a 13:05',
                 'turno' => 'Mañana',
+            ],
+            // Turno Tarde
+            [
+                'bloque' => '14:10 a 14:50',
+                'turno' => 'Tarde',
+            ],
+            [
+                'bloque' => '14:50 a 15:30',
+                'turno' => 'Tarde',
+            ],
+            [
+                'bloque' => '15:30 a 16:10',
+                'turno' => 'Tarde',
+            ],
+            [
+                'bloque' => '16:10 a 16:50',
+                'turno' => 'Tarde',
+            ],
+            [
+                'bloque' => '16:50 a 17:30',
+                'turno' => 'Tarde',
+            ],
+            [
+                'bloque' => '17:30 a 18:10',
+                'turno' => 'Tarde',
+            ],
+            [
+                'bloque' => '18:10 a 18:50',
+                'turno' => 'Tarde',
+            ],
+            [
+                'bloque' => '18:50 a 19:30',
+                'turno' => 'Tarde',
             ],
         ];
 

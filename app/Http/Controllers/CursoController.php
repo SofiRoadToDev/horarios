@@ -51,8 +51,12 @@ class CursoController extends Controller
         // Obtener todos los días (Lunes a Viernes)
         $dias = Dia::orderBy('id')->get();
 
-        // Obtener bloques horarios según el turno del curso
-        $bloqueHoras = BloqueHora::where('turno', $curso->turno)
+        // Obtener bloques horarios de mañana y tarde
+        $bloqueHorasMañana = BloqueHora::where('turno', 'Mañana')
+            ->orderBy('id')
+            ->get();
+
+        $bloqueHorasTarde = BloqueHora::where('turno', 'Tarde')
             ->orderBy('id')
             ->get();
 
@@ -62,7 +66,9 @@ class CursoController extends Controller
             ->get();
 
         // Construir matriz de horarios [bloque_hora_id][dia_id] = datos
-        $horarioGrid = [];
+        $horarioGridMañana = [];
+        $horarioGridTarde = [];
+
         foreach ($horarios as $horario) {
             $bloqueId = $horario->bloque_hora_id;
             $diaId = $horario->dia_id;
@@ -74,14 +80,29 @@ class CursoController extends Controller
                                    $horario->docente->apellido . ' ' .
                                    $condicion;
 
-            // Si ya existe un docente en esta celda, agregar con "/"
-            if (isset($horarioGrid[$bloqueId][$diaId])) {
-                $horarioGrid[$bloqueId][$diaId]['docentes'][] = $docenteConCondicion;
+            // Determinar si es turno mañana o tarde
+            $turnoBloque = $horario->bloqueHora->turno;
+
+            if ($turnoBloque === 'Mañana') {
+                // Si ya existe un docente en esta celda, agregar con "/"
+                if (isset($horarioGridMañana[$bloqueId][$diaId])) {
+                    $horarioGridMañana[$bloqueId][$diaId]['docentes'][] = $docenteConCondicion;
+                } else {
+                    $horarioGridMañana[$bloqueId][$diaId] = [
+                        'materia' => $horario->materia->nombre,
+                        'docentes' => [$docenteConCondicion],
+                    ];
+                }
             } else {
-                $horarioGrid[$bloqueId][$diaId] = [
-                    'materia' => $horario->materia->nombre,
-                    'docentes' => [$docenteConCondicion],
-                ];
+                // Turno Tarde
+                if (isset($horarioGridTarde[$bloqueId][$diaId])) {
+                    $horarioGridTarde[$bloqueId][$diaId]['docentes'][] = $docenteConCondicion;
+                } else {
+                    $horarioGridTarde[$bloqueId][$diaId] = [
+                        'materia' => $horario->materia->nombre,
+                        'docentes' => [$docenteConCondicion],
+                    ];
+                }
             }
         }
 
@@ -99,11 +120,16 @@ class CursoController extends Controller
                 'id' => $dia->id,
                 'nombre' => $dia->nombre,
             ]),
-            'bloqueHoras' => $bloqueHoras->map(fn($bloque) => [
+            'bloqueHorasMañana' => $bloqueHorasMañana->map(fn($bloque) => [
                 'id' => $bloque->id,
                 'bloque' => $bloque->bloque,
             ]),
-            'horarioGrid' => $horarioGrid,
+            'bloqueHorasTarde' => $bloqueHorasTarde->map(fn($bloque) => [
+                'id' => $bloque->id,
+                'bloque' => $bloque->bloque,
+            ]),
+            'horarioGridMañana' => $horarioGridMañana,
+            'horarioGridTarde' => $horarioGridTarde,
         ]);
     }
 }

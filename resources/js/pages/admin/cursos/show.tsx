@@ -30,8 +30,10 @@ interface HorarioCell {
 interface CursoShowProps {
     curso: Curso;
     dias: Dia[];
-    bloqueHoras: BloqueHora[];
-    horarioGrid: Record<number, Record<number, HorarioCell>>;
+    bloqueHorasMañana: BloqueHora[];
+    bloqueHorasTarde: BloqueHora[];
+    horarioGridMañana: Record<number, Record<number, HorarioCell>>;
+    horarioGridTarde: Record<number, Record<number, HorarioCell>>;
 }
 
 /**
@@ -41,8 +43,10 @@ interface CursoShowProps {
 export default function CursoShow({
     curso,
     dias,
-    bloqueHoras,
-    horarioGrid,
+    bloqueHorasMañana,
+    bloqueHorasTarde,
+    horarioGridMañana,
+    horarioGridTarde,
 }: CursoShowProps) {
     return (
         <ThemeProvider>
@@ -112,10 +116,10 @@ export default function CursoShow({
                         </Card>
                     </div>
 
-                    {/* Tabla de horarios */}
+                    {/* Tabla de horarios - Turno Mañana */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Horario Semanal</CardTitle>
+                            <CardTitle>Turno Mañana</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="overflow-x-auto">
@@ -123,7 +127,7 @@ export default function CursoShow({
                                     <thead>
                                         <tr>
                                             <th className="border border-border bg-muted p-2 text-left font-medium">
-                                                horario(bloque)
+                                                Horario (Bloque)
                                             </th>
                                             {dias.map((dia) => (
                                                 <th
@@ -136,16 +140,85 @@ export default function CursoShow({
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {bloqueHoras.map((bloque) => (
+                                        {bloqueHorasMañana.map((bloque) => (
                                             <tr key={bloque.id}>
                                                 <td className="border border-border bg-muted/50 p-2 text-sm font-medium">
                                                     {bloque.bloque}
                                                 </td>
                                                 {dias.map((dia) => {
                                                     const horario =
-                                                        horarioGrid[bloque.id]?.[
-                                                            dia.id
-                                                        ];
+                                                        horarioGridMañana[
+                                                            bloque.id
+                                                        ]?.[dia.id];
+
+                                                    return (
+                                                        <td
+                                                            key={dia.id}
+                                                            className="border border-border p-2 text-sm"
+                                                        >
+                                                            {horario ? (
+                                                                <div>
+                                                                    <div className="font-medium">
+                                                                        {
+                                                                            horario.materia
+                                                                        }
+                                                                    </div>
+                                                                    <div className="text-xs text-muted-foreground">
+                                                                        {horario.docentes.join(
+                                                                            ' / ',
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="text-center text-muted-foreground/30">
+                                                                    -
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Tabla de horarios - Turno Tarde */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Turno Tarde</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th className="border border-border bg-muted p-2 text-left font-medium">
+                                                Horario (Bloque)
+                                            </th>
+                                            {dias.map((dia) => (
+                                                <th
+                                                    key={dia.id}
+                                                    className="border border-border bg-muted p-2 text-center font-medium"
+                                                >
+                                                    {dia.nombre}
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bloqueHorasTarde.map((bloque) => (
+                                            <tr key={bloque.id}>
+                                                <td className="border border-border bg-muted/50 p-2 text-sm font-medium">
+                                                    {bloque.bloque}
+                                                </td>
+                                                {dias.map((dia) => {
+                                                    const horario =
+                                                        horarioGridTarde[
+                                                            bloque.id
+                                                        ]?.[dia.id];
 
                                                     return (
                                                         <td
