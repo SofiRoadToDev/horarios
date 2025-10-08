@@ -47,10 +47,36 @@ class HorarioController extends Controller
     public function store(Request $request)
     {
         try {
+            // Si la petición espera JSON (desde modal), responder con JSON
+            if ($request->expectsJson()) {
+                $horario = $this->horarioService->createHorario($request->all());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Horario creado exitosamente.',
+                    'horario' => $horario->load(['docente', 'materia']),
+                ], 201);
+            }
+
+            // Flujo tradicional con redirect
             $this->horarioService->createHorario($request->all());
             return redirect()->route('horarios.index')->with('success', 'Horario creado exitosamente.');
         } catch (ValidationException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error de validación',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
             return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

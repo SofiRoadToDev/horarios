@@ -6,6 +6,7 @@ use App\Models\Curso;
 use App\Models\Horario;
 use App\Models\BloqueHora;
 use App\Models\Dia;
+use App\Models\Docente;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -106,6 +107,18 @@ class CursoController extends Controller
             }
         }
 
+        // Obtener docentes con sus materias para el modal
+        $docentes = Docente::with('materias')->get()->map(function($docente) {
+            return [
+                'id' => $docente->id,
+                'nombre' => $docente->nombre . ' ' . $docente->apellido,
+                'materias' => $docente->materias->map(fn($materia) => [
+                    'id' => $materia->id,
+                    'nombre' => $materia->nombre,
+                ]),
+            ];
+        });
+
         return Inertia::render('admin/cursos/show', [
             'curso' => [
                 'id' => $curso->id,
@@ -130,6 +143,8 @@ class CursoController extends Controller
             ]),
             'horarioGridMañana' => $horarioGridMañana,
             'horarioGridTarde' => $horarioGridTarde,
+            'docentes' => $docentes,
+            'condicionesDocente' => ['Titular', 'Interino', 'Suplente'],
         ]);
     }
 }

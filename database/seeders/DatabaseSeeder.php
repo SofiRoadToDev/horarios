@@ -28,10 +28,10 @@ class DatabaseSeeder extends Seeder
         $this->call(DiaSeeder::class);
         $this->call(DepartamentoSeeder::class);
         $this->call(PreceptorSeeder::class);
-        $this->call(DocenteSeeder::class);
+        $this->call(MateriaSeeder::class);
+        $this->call(DocenteSeeder::class); // Debe ir después de MateriaSeeder
         $this->call(CursoSeeder::class);
         $this->call(BloqueHoraSeeder::class);
-        $this->call(MateriaSeeder::class);
         $this->call(PofSeeder::class);
         $this->call(HorarioSeeder::class);
     }

@@ -22,6 +22,7 @@ class Horario extends Model
         'dia_id',
         'bloque_hora_id',
         'ciclo_lectivo',
+        'pof_id',
         'condicion_docente',
     ];
 
@@ -48,5 +49,10 @@ class Horario extends Model
     public function bloqueHora(): BelongsTo
     {
         return $this->belongsTo(BloqueHora::class);
+    }
+
+    public function pof(): BelongsTo
+    {
+        return $this->belongsTo(Pof::class);
     }
 }

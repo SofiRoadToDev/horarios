@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import AdminLayout from '@/layouts/AdminLayout';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Clock, GraduationCap, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import HorarioModal, { HorarioFormData } from '@/components/HorarioModal';
+import { router } from '@inertiajs/react';
 
 interface Curso {
     id: number;
@@ -27,6 +30,17 @@ interface HorarioCell {
     docentes: string[];
 }
 
+interface Materia {
+    id: number;
+    nombre: string;
+}
+
+interface Docente {
+    id: number;
+    nombre: string;
+    materias: Materia[];
+}
+
 interface CursoShowProps {
     curso: Curso;
     dias: Dia[];
@@ -34,6 +48,8 @@ interface CursoShowProps {
     bloqueHorasTarde: BloqueHora[];
     horarioGridMañana: Record<number, Record<number, HorarioCell>>;
     horarioGridTarde: Record<number, Record<number, HorarioCell>>;
+    docentes: Docente[];
+    condicionesDocente: string[];
 }
 
 /**
@@ -47,7 +63,66 @@ export default function CursoShow({
     bloqueHorasTarde,
     horarioGridMañana,
     horarioGridTarde,
+    docentes,
+    condicionesDocente,
 }: CursoShowProps) {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedCell, setSelectedCell] = useState<{
+        diaId: number;
+        bloqueHoraId: number;
+        diaNombre: string;
+        bloqueHoraNombre: string;
+    } | null>(null);
+
+    const handleCellClick = (
+        diaId: number,
+        bloqueHoraId: number,
+        diaNombre: string,
+        bloqueHoraNombre: string,
+        hasHorario: boolean,
+    ) => {
+        // Solo abrir modal si la celda está vacía
+        if (!hasHorario) {
+            setSelectedCell({ diaId, bloqueHoraId, diaNombre, bloqueHoraNombre });
+            setModalOpen(true);
+        }
+    };
+
+    const handleSaveHorario = async (data: HorarioFormData) => {
+        console.log('Enviando datos:', data);
+
+        try {
+            const response = await fetch('/admin/horarios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document
+                        .querySelector('meta[name="csrf-token"]')
+                        ?.getAttribute('content') || '',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            console.log('Response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error del servidor:', errorData);
+                alert(`Error: ${errorData.message || 'Error al guardar horario'}`);
+                throw new Error(errorData.message || 'Error al guardar horario');
+            }
+
+            const result = await response.json();
+            console.log('Horario guardado:', result);
+
+            // Recargar la página para ver los cambios
+            router.reload();
+        } catch (error) {
+            console.error('Error guardando horario:', error);
+            throw error;
+        }
+    };
     return (
         <ThemeProvider>
             <AdminLayout>
@@ -154,7 +229,20 @@ export default function CursoShow({
                                                     return (
                                                         <td
                                                             key={dia.id}
-                                                            className="border border-border p-2 text-sm"
+                                                            className={`border border-border p-2 text-sm ${
+                                                                !horario
+                                                                    ? 'cursor-pointer hover:bg-accent/50 transition-colors'
+                                                                    : ''
+                                                            }`}
+                                                            onClick={() =>
+                                                                handleCellClick(
+                                                                    dia.id,
+                                                                    bloque.id,
+                                                                    dia.nombre,
+                                                                    bloque.bloque,
+                                                                    !!horario,
+                                                                )
+                                                            }
                                                         >
                                                             {horario ? (
                                                                 <div>
@@ -171,7 +259,7 @@ export default function CursoShow({
                                                                 </div>
                                                             ) : (
                                                                 <div className="text-center text-muted-foreground/30">
-                                                                    -
+                                                                    +
                                                                 </div>
                                                             )}
                                                         </td>
@@ -223,7 +311,20 @@ export default function CursoShow({
                                                     return (
                                                         <td
                                                             key={dia.id}
-                                                            className="border border-border p-2 text-sm"
+                                                            className={`border border-border p-2 text-sm ${
+                                                                !horario
+                                                                    ? 'cursor-pointer hover:bg-accent/50 transition-colors'
+                                                                    : ''
+                                                            }`}
+                                                            onClick={() =>
+                                                                handleCellClick(
+                                                                    dia.id,
+                                                                    bloque.id,
+                                                                    dia.nombre,
+                                                                    bloque.bloque,
+                                                                    !!horario,
+                                                                )
+                                                            }
                                                         >
                                                             {horario ? (
                                                                 <div>
@@ -240,7 +341,7 @@ export default function CursoShow({
                                                                 </div>
                                                             ) : (
                                                                 <div className="text-center text-muted-foreground/30">
-                                                                    -
+                                                                    +
                                                                 </div>
                                                             )}
                                                         </td>
@@ -254,6 +355,22 @@ export default function CursoShow({
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Modal de creación de horario */}
+                {selectedCell && (
+                    <HorarioModal
+                        open={modalOpen}
+                        onClose={() => setModalOpen(false)}
+                        onSave={handleSaveHorario}
+                        docentes={docentes}
+                        condicionesDocente={condicionesDocente}
+                        cursoId={curso.id}
+                        diaId={selectedCell.diaId}
+                        bloqueHoraId={selectedCell.bloqueHoraId}
+                        diaNombre={selectedCell.diaNombre}
+                        bloqueHoraNombre={selectedCell.bloqueHoraNombre}
+                    />
+                )}
             </AdminLayout>
         </ThemeProvider>
     );

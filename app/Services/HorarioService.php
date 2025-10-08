@@ -74,6 +74,7 @@ class HorarioService
             'dia_id' => ['required', 'exists:dias,id'],
             'bloque_hora_id' => ['required', 'exists:bloque_horas,id'],
             'ciclo_lectivo' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 5)],
+            'pof_id' => ['nullable', 'exists:pofs,id'],
             'condicion_docente' => ['required', 'in:Titular,Interino,Suplente'],
         ]);
 
