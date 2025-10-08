@@ -30,15 +30,12 @@ interface HorarioCell {
     docentes: string[];
 }
 
-interface Materia {
+interface Pof {
     id: number;
-    nombre: string;
-}
-
-interface Docente {
-    id: number;
-    nombre: string;
-    materias: Materia[];
+    docente: string;
+    materia: string;
+    condicion_docente: string;
+    obligaciones: number;
 }
 
 interface CursoShowProps {
@@ -48,8 +45,7 @@ interface CursoShowProps {
     bloqueHorasTarde: BloqueHora[];
     horarioGridMañana: Record<number, Record<number, HorarioCell>>;
     horarioGridTarde: Record<number, Record<number, HorarioCell>>;
-    docentes: Docente[];
-    condicionesDocente: string[];
+    pofs: Pof[];
 }
 
 /**
@@ -63,8 +59,7 @@ export default function CursoShow({
     bloqueHorasTarde,
     horarioGridMañana,
     horarioGridTarde,
-    docentes,
-    condicionesDocente,
+    pofs,
 }: CursoShowProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedCell, setSelectedCell] = useState<{
@@ -362,9 +357,7 @@ export default function CursoShow({
                         open={modalOpen}
                         onClose={() => setModalOpen(false)}
                         onSave={handleSaveHorario}
-                        docentes={docentes}
-                        condicionesDocente={condicionesDocente}
-                        cursoId={curso.id}
+                        pofs={pofs}
                         diaId={selectedCell.diaId}
                         bloqueHoraId={selectedCell.bloqueHoraId}
                         diaNombre={selectedCell.diaNombre}

@@ -10,177 +10,45 @@ class HorarioSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * Estructura simplificada: Solo pof_id, dia_id, bloque_hora_id
+     * El POF ya contiene: docente, materia, curso, condicion, ciclo_lectivo, obligaciones
      */
     public function run(): void
     {
         $horarios = [
-            // Juan Pérez - Matemática I en 11CBTM (Curso ID: 1) - POF 1
-            [
-                'docente_id' => 1,
-                'curso_id' => 1,
-                'materia_id' => 1, // Matemática I
-                'dia_id' => 1, // Lunes
-                'bloque_hora_id' => 1, // 7:45 a 8:25
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 1,
-                'condicion_docente' => 'Titular',
-            ],
-            [
-                'docente_id' => 1,
-                'curso_id' => 1,
-                'materia_id' => 1, // Matemática I
-                'dia_id' => 3, // Miércoles
-                'bloque_hora_id' => 2, // 8:25 a 9:05
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 1,
-                'condicion_docente' => 'Titular',
-            ],
-            [
-                'docente_id' => 1,
-                'curso_id' => 1,
-                'materia_id' => 1, // Matemática I
-                'dia_id' => 5, // Viernes
-                'bloque_hora_id' => 3, // 9:05 a 9:45
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 1,
-                'condicion_docente' => 'Titular',
-            ],
+            // POF 1: Juan Pérez - Matemática I - 11CBTM (3 obligaciones)
+            ['pof_id' => 1, 'dia_id' => 1, 'bloque_hora_id' => 1], // Lunes 7:45-8:25
+            ['pof_id' => 1, 'dia_id' => 3, 'bloque_hora_id' => 2], // Miércoles 8:25-9:05
+            ['pof_id' => 1, 'dia_id' => 5, 'bloque_hora_id' => 3], // Viernes 9:05-9:45
 
-            // María López González - Lengua I en 12CBTM (Curso ID: 2) - POF 2
-            [
-                'docente_id' => 2,
-                'curso_id' => 2,
-                'materia_id' => 2, // Lengua I
-                'dia_id' => 2, // Martes
-                'bloque_hora_id' => 3, // 9:05 a 9:45
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 2,
-                'condicion_docente' => 'Interino',
-            ],
-            [
-                'docente_id' => 2,
-                'curso_id' => 2,
-                'materia_id' => 2, // Lengua I
-                'dia_id' => 4, // Jueves
-                'bloque_hora_id' => 4, // 9:45 a 10:25
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 2,
-                'condicion_docente' => 'Interino',
-            ],
+            // POF 2: María López - Lengua I - 12CBTM (2 obligaciones)
+            ['pof_id' => 2, 'dia_id' => 2, 'bloque_hora_id' => 3], // Martes 9:05-9:45
+            ['pof_id' => 2, 'dia_id' => 4, 'bloque_hora_id' => 4], // Jueves 9:45-10:25
 
-            // Carlos García Rodríguez - Historia en 21CBTM (Curso ID: 3) - POF 3
-            [
-                'docente_id' => 3,
-                'curso_id' => 3,
-                'materia_id' => 3, // Historia
-                'dia_id' => 1, // Lunes
-                'bloque_hora_id' => 5, // 10:25 a 11:05
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 3,
-                'condicion_docente' => 'Suplente',
-            ],
-            [
-                'docente_id' => 3,
-                'curso_id' => 3,
-                'materia_id' => 3, // Historia
-                'dia_id' => 3, // Miércoles
-                'bloque_hora_id' => 6, // 11:05 a 11:45
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 3,
-                'condicion_docente' => 'Suplente',
-            ],
+            // POF 3: Carlos García - Historia - 21CBTM (2 obligaciones)
+            ['pof_id' => 3, 'dia_id' => 1, 'bloque_hora_id' => 5], // Lunes 10:25-11:05
+            ['pof_id' => 3, 'dia_id' => 3, 'bloque_hora_id' => 6], // Miércoles 11:05-11:45
 
-            // Juan Pérez - Ciencias Naturales en 12CBTM (Curso ID: 2) - POF 4
-            [
-                'docente_id' => 1,
-                'curso_id' => 2,
-                'materia_id' => 4, // Ciencias Naturales
-                'dia_id' => 2, // Martes
-                'bloque_hora_id' => 1, // 7:45 a 8:25
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 4,
-                'condicion_docente' => 'Titular',
-            ],
-            [
-                'docente_id' => 1,
-                'curso_id' => 2,
-                'materia_id' => 4, // Ciencias Naturales
-                'dia_id' => 4, // Jueves
-                'bloque_hora_id' => 7, // 11:45 a 12:25
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 4,
-                'condicion_docente' => 'Titular',
-            ],
+            // POF 4: Juan Pérez - Ciencias Naturales - 12CBTM (2 obligaciones)
+            ['pof_id' => 4, 'dia_id' => 2, 'bloque_hora_id' => 1], // Martes 7:45-8:25
+            ['pof_id' => 4, 'dia_id' => 4, 'bloque_hora_id' => 7], // Jueves 11:45-12:25
 
-            // María López González - Lengua I en 21CBTM (Curso ID: 3) - POF 5
-            [
-                'docente_id' => 2,
-                'curso_id' => 3,
-                'materia_id' => 2, // Lengua I
-                'dia_id' => 1, // Lunes
-                'bloque_hora_id' => 2, // 8:25 a 9:05
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 5,
-                'condicion_docente' => 'Interino',
-            ],
-            [
-                'docente_id' => 2,
-                'curso_id' => 3,
-                'materia_id' => 2, // Lengua I
-                'dia_id' => 5, // Viernes
-                'bloque_hora_id' => 5, // 10:25 a 11:05
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 5,
-                'condicion_docente' => 'Interino',
-            ],
+            // POF 5: María López - Lengua I - 21CBTM (2 obligaciones)
+            ['pof_id' => 5, 'dia_id' => 1, 'bloque_hora_id' => 2], // Lunes 8:25-9:05
+            ['pof_id' => 5, 'dia_id' => 5, 'bloque_hora_id' => 5], // Viernes 10:25-11:05
 
-            // Carlos García Rodríguez - Historia en 11CBTM (Curso ID: 1) - POF 6
-            [
-                'docente_id' => 3,
-                'curso_id' => 1,
-                'materia_id' => 3, // Historia
-                'dia_id' => 2, // Martes
-                'bloque_hora_id' => 6, // 11:05 a 11:45
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 6,
-                'condicion_docente' => 'Suplente',
-            ],
+            // POF 6: Carlos García - Historia - 11CBTM (1 obligación)
+            ['pof_id' => 6, 'dia_id' => 2, 'bloque_hora_id' => 6], // Martes 11:05-11:45
 
-            // Juan Pérez - Inglés en 21CBTM (Curso ID: 3) - POF 7
-            [
-                'docente_id' => 1,
-                'curso_id' => 3,
-                'materia_id' => 5, // Inglés
-                'dia_id' => 4, // Jueves
-                'bloque_hora_id' => 2, // 8:25 a 9:05
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 7,
-                'condicion_docente' => 'Titular',
-            ],
+            // POF 7: Juan Pérez - Inglés - 21CBTM (1 obligación)
+            ['pof_id' => 7, 'dia_id' => 4, 'bloque_hora_id' => 2], // Jueves 8:25-9:05
 
-            // María López González - Educación Física en 12CBTM (Curso ID: 2) - POF 8
-            [
-                'docente_id' => 2,
-                'curso_id' => 2,
-                'materia_id' => 6, // Educación Física
-                'dia_id' => 3, // Miércoles
-                'bloque_hora_id' => 4, // 9:45 a 10:25
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 8,
-                'condicion_docente' => 'Interino',
-            ],
+            // POF 8: María López - Educación Física - 12CBTM (1 obligación)
+            ['pof_id' => 8, 'dia_id' => 3, 'bloque_hora_id' => 4], // Miércoles 9:45-10:25
 
-            // Carlos García Rodríguez - Matemática I en 12CBTM (Curso ID: 2) - POF 9
-            [
-                'docente_id' => 3,
-                'curso_id' => 2,
-                'materia_id' => 1, // Matemática I
-                'dia_id' => 5, // Viernes
-                'bloque_hora_id' => 1, // 7:45 a 8:25
-                'ciclo_lectivo' => 2025,
-                'pof_id' => 9,
-                'condicion_docente' => 'Suplente',
-            ],
+            // POF 9: Carlos García - Matemática I - 12CBTM (1 obligación)
+            ['pof_id' => 9, 'dia_id' => 5, 'bloque_hora_id' => 1], // Viernes 7:45-8:25
         ];
 
         DB::table('horarios')->insert($horarios);

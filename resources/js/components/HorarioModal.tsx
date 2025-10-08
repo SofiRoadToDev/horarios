@@ -18,24 +18,19 @@ import {
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 
-interface Materia {
+interface Pof {
     id: number;
-    nombre: string;
-}
-
-interface Docente {
-    id: number;
-    nombre: string;
-    materias: Materia[];
+    docente: string;
+    materia: string;
+    condicion_docente: string;
+    obligaciones: number;
 }
 
 interface HorarioModalProps {
     open: boolean;
     onClose: () => void;
     onSave: (data: HorarioFormData) => Promise<void>;
-    docentes: Docente[];
-    condicionesDocente: string[];
-    cursoId: number;
+    pofs: Pof[];
     diaId: number;
     bloqueHoraId: number;
     diaNombre: string;
@@ -43,74 +38,41 @@ interface HorarioModalProps {
 }
 
 export interface HorarioFormData {
-    curso_id: number;
+    pof_id: number | null;
     dia_id: number;
     bloque_hora_id: number;
-    docente_id: number | null;
-    materia_id: number | null;
-    condicion_docente: string | null;
-    ciclo_lectivo: number;
 }
 
 export default function HorarioModal({
     open,
     onClose,
     onSave,
-    docentes,
-    condicionesDocente,
-    cursoId,
+    pofs,
     diaId,
     bloqueHoraId,
     diaNombre,
     bloqueHoraNombre,
 }: HorarioModalProps) {
     const [formData, setFormData] = useState<HorarioFormData>({
-        curso_id: cursoId,
+        pof_id: null,
         dia_id: diaId,
         bloque_hora_id: bloqueHoraId,
-        docente_id: null,
-        materia_id: null,
-        condicion_docente: null,
-        ciclo_lectivo: new Date().getFullYear(),
     });
 
-    const [materiasDisponibles, setMateriasDisponibles] = useState<Materia[]>(
-        [],
-    );
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Resetear form cuando cambian los props
     useEffect(() => {
         setFormData({
-            curso_id: cursoId,
+            pof_id: null,
             dia_id: diaId,
             bloque_hora_id: bloqueHoraId,
-            docente_id: null,
-            materia_id: null,
-            condicion_docente: null,
-            ciclo_lectivo: new Date().getFullYear(),
         });
-        setMateriasDisponibles([]);
-    }, [cursoId, diaId, bloqueHoraId, open]);
-
-    // Cuando selecciona docente, actualizar materias disponibles
-    const handleDocenteChange = (docenteId: string) => {
-        const docente = docentes.find((d) => d.id === parseInt(docenteId));
-        setFormData({
-            ...formData,
-            docente_id: parseInt(docenteId),
-            materia_id: null, // Reset materia
-        });
-        setMateriasDisponibles(docente?.materias || []);
-    };
+    }, [diaId, bloqueHoraId, open]);
 
     const handleSubmit = async () => {
-        if (
-            !formData.docente_id ||
-            !formData.materia_id ||
-            !formData.condicion_docente
-        ) {
-            alert('Por favor complete todos los campos');
+        if (!formData.pof_id) {
+            alert('Por favor seleccione un POF');
             return;
         }
 
@@ -125,6 +87,8 @@ export default function HorarioModal({
         }
     };
 
+    const selectedPof = pofs.find((p) => p.id === formData.pof_id);
+
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[500px]">
@@ -136,99 +100,63 @@ export default function HorarioModal({
                 </DialogHeader>
 
                 <div className="grid gap-4 py-4">
-                    {/* Selector de Docente */}
+                    {/* Selector de POF */}
                     <div className="grid gap-2">
-                        <Label htmlFor="docente">Docente</Label>
+                        <Label htmlFor="pof">
+                            Seleccione Docente y Materia (POF)
+                        </Label>
                         <Select
-                            value={formData.docente_id?.toString() || ''}
-                            onValueChange={handleDocenteChange}
-                        >
-                            <SelectTrigger id="docente">
-                                <SelectValue placeholder="Seleccione un docente" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {docentes.map((docente) => (
-                                    <SelectItem
-                                        key={docente.id}
-                                        value={docente.id.toString()}
-                                    >
-                                        {docente.nombre}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Selector de Materia */}
-                    <div className="grid gap-2">
-                        <Label htmlFor="materia">Materia</Label>
-                        <Select
-                            value={formData.materia_id?.toString() || ''}
+                            value={formData.pof_id?.toString() || ''}
                             onValueChange={(value) =>
                                 setFormData({
                                     ...formData,
-                                    materia_id: parseInt(value),
+                                    pof_id: parseInt(value),
                                 })
                             }
-                            disabled={!formData.docente_id}
                         >
-                            <SelectTrigger id="materia">
-                                <SelectValue
-                                    placeholder={
-                                        formData.docente_id
-                                            ? 'Seleccione una materia'
-                                            : 'Primero seleccione un docente'
-                                    }
-                                />
+                            <SelectTrigger id="pof">
+                                <SelectValue placeholder="Seleccione un POF" />
                             </SelectTrigger>
                             <SelectContent>
-                                {materiasDisponibles.length > 0 ? (
-                                    materiasDisponibles.map((materia) => (
+                                {pofs.length > 0 ? (
+                                    pofs.map((pof) => (
                                         <SelectItem
-                                            key={materia.id}
-                                            value={materia.id.toString()}
+                                            key={pof.id}
+                                            value={pof.id.toString()}
                                         >
-                                            {materia.nombre}
+                                            {pof.docente} - {pof.materia} (
+                                            {pof.condicion_docente})
                                         </SelectItem>
                                     ))
                                 ) : (
                                     <SelectItem value="none" disabled>
-                                        No hay materias disponibles
+                                        No hay POFs disponibles para este curso
                                     </SelectItem>
                                 )}
                             </SelectContent>
                         </Select>
-                        {formData.docente_id &&
-                            materiasDisponibles.length === 0 && (
-                                <p className="text-sm text-muted-foreground">
-                                    Este docente no tiene materias asignadas
-                                </p>
-                            )}
-                    </div>
 
-                    {/* Selector de Condición */}
-                    <div className="grid gap-2">
-                        <Label htmlFor="condicion">Condición</Label>
-                        <Select
-                            value={formData.condicion_docente || ''}
-                            onValueChange={(value) =>
-                                setFormData({
-                                    ...formData,
-                                    condicion_docente: value,
-                                })
-                            }
-                        >
-                            <SelectTrigger id="condicion">
-                                <SelectValue placeholder="Seleccione la condición" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {condicionesDocente.map((condicion) => (
-                                    <SelectItem key={condicion} value={condicion}>
-                                        {condicion}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        {/* Info adicional del POF seleccionado */}
+                        {selectedPof && (
+                            <div className="mt-2 rounded-md bg-muted p-3 text-sm">
+                                <p>
+                                    <strong>Docente:</strong>{' '}
+                                    {selectedPof.docente}
+                                </p>
+                                <p>
+                                    <strong>Materia:</strong>{' '}
+                                    {selectedPof.materia}
+                                </p>
+                                <p>
+                                    <strong>Condición:</strong>{' '}
+                                    {selectedPof.condicion_docente}
+                                </p>
+                                <p>
+                                    <strong>Obligaciones:</strong>{' '}
+                                    {selectedPof.obligaciones} horas
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -11,7 +11,7 @@ class HorarioService
     /**
      * Crea un nuevo registro de horario en la base de datos.
      *
-     * @param array $data Array asociativo con los datos del horario (docente_id, curso_id, materia_id, dia_id, bloque_hora_id, ciclo_lectivo, condicion_docente).
+     * @param array $data Array asociativo con los datos del horario (pof_id, dia_id, bloque_hora_id).
      * @return Horario El objeto Horario recién creado.
      * @throws ValidationException Si los datos no son válidos o el bloque horario ya está ocupado.
      */
@@ -68,14 +68,9 @@ class HorarioService
     protected function validateHorarioData(array $data): void
     {
         $validator = Validator::make($data, [
-            'docente_id' => ['required', 'exists:docentes,id'],
-            'curso_id' => ['required', 'exists:cursos,id'],
-            'materia_id' => ['required', 'exists:materias,id'],
+            'pof_id' => ['required', 'exists:pofs,id'],
             'dia_id' => ['required', 'exists:dias,id'],
             'bloque_hora_id' => ['required', 'exists:bloque_horas,id'],
-            'ciclo_lectivo' => ['required', 'integer', 'min:1900', 'max:' . (date('Y') + 5)],
-            'pof_id' => ['nullable', 'exists:pofs,id'],
-            'condicion_docente' => ['required', 'in:Titular,Interino,Suplente'],
         ]);
 
         $validator->validate(); // Lanza ValidationException si falla
@@ -90,7 +85,19 @@ class HorarioService
      */
     protected function checkAvailability(array $data, ?int $excludeHorarioId = null): void
     {
-        $query = Horario::where('curso_id', $data['curso_id'])
+        // Obtener el POF para saber el curso
+        $pof = \App\Models\Pof::find($data['pof_id']);
+
+        if (!$pof) {
+            throw ValidationException::withMessages([
+                'pof_id' => 'El POF especificado no existe.'
+            ]);
+        }
+
+        // Verificar si ya existe un horario para este curso en el mismo día y bloque
+        $query = Horario::whereHas('pof', function($q) use ($pof) {
+                            $q->where('curso_id', $pof->curso_id);
+                        })
                         ->where('dia_id', $data['dia_id'])
                         ->where('bloque_hora_id', $data['bloque_hora_id']);
 
@@ -101,6 +108,24 @@ class HorarioService
         if ($query->exists()) {
             throw ValidationException::withMessages([
                 'bloque_horario' => 'Este bloque horario ya está ocupado para este curso.'
+            ]);
+        }
+
+        // Verificar conflicto de docente (no puede estar en 2 cursos al mismo tiempo)
+        $conflictoDocente = Horario::whereHas('pof', function($q) use ($pof) {
+                                        $q->where('docente_id', $pof->docente_id)
+                                          ->where('curso_id', '!=', $pof->curso_id);
+                                    })
+                                    ->where('dia_id', $data['dia_id'])
+                                    ->where('bloque_hora_id', $data['bloque_hora_id']);
+
+        if ($excludeHorarioId) {
+            $conflictoDocente->where('id', '!=', $excludeHorarioId);
+        }
+
+        if ($conflictoDocente->exists()) {
+            throw ValidationException::withMessages([
+                'conflicto_docente' => 'El docente ya tiene asignado otro curso en este mismo horario.'
             ]);
         }
     }

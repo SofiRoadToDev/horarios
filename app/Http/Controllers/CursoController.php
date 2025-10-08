@@ -107,17 +107,20 @@ class CursoController extends Controller
             }
         }
 
-        // Obtener docentes con sus materias para el modal
-        $docentes = Docente::with('materias')->get()->map(function($docente) {
-            return [
-                'id' => $docente->id,
-                'nombre' => $docente->nombre . ' ' . $docente->apellido,
-                'materias' => $docente->materias->map(fn($materia) => [
-                    'id' => $materia->id,
-                    'nombre' => $materia->nombre,
-                ]),
-            ];
-        });
+        // Obtener POFs activos del curso actual
+        $pofs = \App\Models\Pof::where('curso_id', $id)
+            ->where('tipo', 'Alta')
+            ->with(['docente', 'materia'])
+            ->get()
+            ->map(function($pof) {
+                return [
+                    'id' => $pof->id,
+                    'docente' => $pof->docente->nombre . ' ' . $pof->docente->apellido,
+                    'materia' => $pof->materia->nombre,
+                    'condicion_docente' => $pof->condicion_docente,
+                    'obligaciones' => $pof->obligaciones,
+                ];
+            });
 
         return Inertia::render('admin/cursos/show', [
             'curso' => [
@@ -143,8 +146,7 @@ class CursoController extends Controller
             ]),
             'horarioGridMañana' => $horarioGridMañana,
             'horarioGridTarde' => $horarioGridTarde,
-            'docentes' => $docentes,
-            'condicionesDocente' => ['Titular', 'Interino', 'Suplente'],
+            'pofs' => $pofs,
         ]);
     }
 }

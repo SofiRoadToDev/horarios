@@ -16,31 +16,40 @@ class Horario extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'docente_id',
-        'curso_id',
-        'materia_id',
+        'pof_id',
         'dia_id',
         'bloque_hora_id',
-        'ciclo_lectivo',
-        'pof_id',
-        'condicion_docente',
     ];
 
+    /**
+     * Relación directa con POF
+     */
+    public function pof(): BelongsTo
+    {
+        return $this->belongsTo(Pof::class);
+    }
+
+    /**
+     * Relaciones indirectas a través del POF
+     */
     public function docente(): BelongsTo
     {
-        return $this->belongsTo(Docente::class);
+        return $this->pof->belongsTo(Docente::class);
     }
 
     public function curso(): BelongsTo
     {
-        return $this->belongsTo(Curso::class);
+        return $this->pof->belongsTo(Curso::class);
     }
 
     public function materia(): BelongsTo
     {
-        return $this->belongsTo(Materia::class);
+        return $this->pof->belongsTo(Materia::class);
     }
 
+    /**
+     * Relaciones directas
+     */
     public function dia(): BelongsTo
     {
         return $this->belongsTo(Dia::class);
@@ -51,8 +60,31 @@ class Horario extends Model
         return $this->belongsTo(BloqueHora::class);
     }
 
-    public function pof(): BelongsTo
+    /**
+     * Accessors para obtener datos del POF fácilmente
+     */
+    public function getDocenteIdAttribute(): ?int
     {
-        return $this->belongsTo(Pof::class);
+        return $this->pof?->docente_id;
+    }
+
+    public function getCursoIdAttribute(): ?int
+    {
+        return $this->pof?->curso_id;
+    }
+
+    public function getMateriaIdAttribute(): ?int
+    {
+        return $this->pof?->materia_id;
+    }
+
+    public function getCondicionDocenteAttribute(): ?string
+    {
+        return $this->pof?->condicion_docente;
+    }
+
+    public function getCicloLectivoAttribute(): ?string
+    {
+        return $this->pof?->ciclo_lectivo;
     }
 }
