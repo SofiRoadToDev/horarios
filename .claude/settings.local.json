@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mysql:*)",
+      "Bash(php artisan tinker:*)",
+      "Bash(php artisan schema:cache:*)",
+      "Bash(php artisan migrate:fresh:*)",
+      "Bash(php artisan config:clear:*)",
+      "Bash(php artisan:*)",
+      "Bash(cat:*)",
+      "Bash(chmod:*)",
+      "Bash(fuser:*)",
+      "Bash(lsof:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

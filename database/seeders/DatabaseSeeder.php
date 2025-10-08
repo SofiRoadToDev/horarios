@@ -32,5 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CursoSeeder::class);
         $this->call(BloqueHoraSeeder::class);
         $this->call(MateriaSeeder::class);
+        $this->call(PofSeeder::class);
+        $this->call(HorarioSeeder::class);
     }
 }

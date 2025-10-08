@@ -36,11 +36,11 @@ class MateriaSeeder extends Seeder
             ],
             [
                 'nombre' => 'Inglés',
-                'departamento_id' => 4,
+                'departamento_id' => 1,
             ],
             [
                 'nombre' => 'Educación Física',
-                'departamento_id' => 5,
+                'departamento_id' => 2,
             ],
         ];
 

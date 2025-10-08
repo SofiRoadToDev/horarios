@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Docente;
 
 class DocenteSeeder extends Seeder
 {
@@ -29,5 +30,11 @@ class DocenteSeeder extends Seeder
                 'dni' => '23456789',
             ],
         ];
+
+          foreach ($docentes as $docente) {
+        Docente::create($docente);
     }
+    }
+
+
 }

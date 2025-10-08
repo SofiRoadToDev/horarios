@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('dia_id')->constrained('dias')->onDelete('cascade');
             $table->foreignId('bloque_hora_id')->constrained('bloque_horas')->onDelete('cascade');
             $table->year('ciclo_lectivo');
-            $table->foreignId('pof_id')->constrained('pof')->onDelete('cascade');
+            $table->foreignId('pof_id')->constrained('pofs')->onDelete('cascade')->nullable();
             $table->enum('condicion_docente', ['Titular', 'Interino', 'Suplente']);
             $table->timestamps();
         });
